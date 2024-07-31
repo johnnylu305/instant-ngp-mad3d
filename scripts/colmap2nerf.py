@@ -355,6 +355,8 @@ if __name__ == "__main__":
 
                     up += c2w[0:3,1]
                 name = str(f"./{os.path.split(image_rel)[-1]}/{'_'.join(elems[9:])}")
+                print(image_rel)
+                print(name)
                 frame = {"file_path":name,"sharpness":b,"transform_matrix": c2w}
                 if len(cameras) != 1:
                     frame.update(cameras[int(elems[8])])

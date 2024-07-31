@@ -70,7 +70,7 @@ def stop_rendering():
 
 def run_colmap():
     # python3 scripts/colmap2nerf.py --colmap_matcher exhaustive --run_colmap --aabb_scale 32 --images ../MAD3DDataset/single_drone_test/ --out ../MAD3DDataset/single_drone_test/transform.json 
-    command = ["python3", "scripts/colmap2nerf.py", "--colmap_matcher", f"{args.colmap_matcher}", "--run_colmap", "--aabb_scale", f"{args.colmap_aabb_scale}", "--images", f"{args.images}", "--out", "{args.out}", "--overwrite"]
+    command = ["python3", "scripts/colmap2nerf.py", "--colmap_matcher", f"{args.colmap_matcher}", "--run_colmap", "--aabb_scale", f"{args.colmap_aabb_scale}", "--images", f"{args.images}", "--out", f"{args.out}", "--overwrite"]
     subprocess.run(command)
 
 def start_colmap():
@@ -107,7 +107,7 @@ def on_release(key):
         return False
 
 def main():
-    print("Press 't' to start run_ngp(), 'i' to start ingp_render_online(), 'p' to stop run_ngp(), 'q' to stop ingp_render_online().")
+    print("Press 'c' to start pose estimation, 't' to start nerf training, 'i' to start inference, 'q' to reset.")
     print("Press 'esc' to exit.")
 
     # Setup the keyboard listener
