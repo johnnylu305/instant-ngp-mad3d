@@ -120,7 +120,8 @@ def run_colmap(args):
         sys.exit(1)
     if os.path.exists(db):
         os.remove(db)
-    do_system(f"{colmap_binary} feature_extractor --ImageReader.camera_model {args.colmap_camera_model} --ImageReader.camera_params \"{args.colmap_camera_params}\" --SiftExtraction.estimate_affine_shape=false --SiftExtraction.domain_size_pooling=false --ImageReader.single_camera 1 --database_path {db} --image_path {images} --SiftExtraction.max_image_size 4000")
+    #do_system(f"{colmap_binary} feature_extractor --ImageReader.camera_model {args.colmap_camera_model} --ImageReader.camera_params \"{args.colmap_camera_params}\" --SiftExtraction.estimate_affine_shape=false --SiftExtraction.domain_size_pooling=false --ImageReader.single_camera 1 --database_path {db} --image_path {images} --SiftExtraction.max_image_size 4000")
+    do_system(f"{colmap_binary} feature_extractor --ImageReader.camera_model {args.colmap_camera_model} --ImageReader.camera_params \"{args.colmap_camera_params}\" --SiftExtraction.estimate_affine_shape=false --SiftExtraction.domain_size_pooling=false --ImageReader.single_camera_per_folder 1  --database_path {db} --image_path {images} --SiftExtraction.max_image_size 4000")
     match_cmd = f"{colmap_binary} {args.colmap_matcher}_matcher --SiftMatching.guided_matching=true --database_path {db}"
     if args.vocab_path:
         match_cmd += f" --VocabTreeMatching.vocab_tree_path {args.vocab_path}"
@@ -354,7 +355,8 @@ if __name__ == "__main__":
                     c2w[2,:] *= -1 # flip whole world upside down
 
                     up += c2w[0:3,1]
-                name = str(f"./{os.path.split(image_rel)[-1]}/{'_'.join(elems[9:])}")
+                root_path = '/'.join(image_rel.split('/')[3:])
+                name = str(f"./{root_path}/{'_'.join(elems[9:])}")
                 print(image_rel)
                 print(name)
                 frame = {"file_path":name,"sharpness":b,"transform_matrix": c2w}

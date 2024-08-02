@@ -75,8 +75,8 @@ def run_ingp(args):
         testbed.nerf.training.set_camera_extrinsics(idx, param['transform_matrix'][:3], convert_to_ngp=True)
         testbed.nerf.training.set_camera_intrinsics(
             idx,
-            fx=params["fl_x"], fy=params["fl_y"],
-            cx=params["cx"], cy=params["cy"],
+            fx=param["fl_x"], fy=param["fl_y"],
+            cx=param["cx"], cy=param["cy"],
         )
 
     if args.no_opt:

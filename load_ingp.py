@@ -48,8 +48,8 @@ def ingp_render_online(args):
     # near plane
     if args.near_distance>=0.0:
         testbed.nerf.training.near_distance = args.near_distance
-    #testbed.render_aabb.min = np.array([args.x_scale[0], args.y_scale[0], args.z_scale[0]])
-    #testbed.render_aabb.max = np.array([args.x_scale[1], args.y_scale[1], args.z_scale[1]])
+    testbed.render_aabb.min = np.array([-0.179, -0.154, -0.204])
+    testbed.render_aabb.max = np.array([1.230, 0.905, 1.429])
 
     sw = 1920 #width 
     sh = 1080 #height 
