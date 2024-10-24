@@ -33,7 +33,7 @@ def ingp_render(args):
     snapshot_path = os.path.join(parent, 'train_models', 'offline.ingp')
     testbed.load_snapshot(snapshot_path)
     # initialize a dataset
-    testbed.create_empty_nerf_dataset(n_images=len(params['frames']), aabb_scale=args.aabb)
+    #testbed.create_empty_nerf_dataset(n_images=len(params['frames']), aabb_scale=args.aabb)
     testbed.shall_train = False   
     #testbed.load_training_data(args.pose)
     # near plane
@@ -44,24 +44,22 @@ def ingp_render(args):
     testbed.render_aabb.min = np.array([args.x_scale[0], args.y_scale[0], args.z_scale[0]])
     testbed.render_aabb.max = np.array([args.x_scale[1], args.y_scale[1], args.z_scale[1]])
 
-    for i in range(len(params['frames'])):
-        height, width = int(params['frames'][i]['h']), int(params['frames'][i]['w'])
-        depth_img = np.zeros((height, width))
-        img = np.zeros((height, width, 4))
-        testbed.nerf.training.set_image(i, img, depth_img)
-        testbed.nerf.training.set_camera_extrinsics(i, params['frames'][i]['transform_matrix'][:3], convert_to_ngp=True)
-        testbed.nerf.training.set_camera_intrinsics(
-            i,
-            fx=params['frames'][i]["fl_x"], fy=params['frames'][i]["fl_y"],
-            cx=params['frames'][i]["cx"], cy=params['frames'][i]["cy"],
-        )
 
-    #for i in range(len(params['frames'])):
-    with tqdm(range(testbed.nerf.training.dataset.n_images), unit="images", desc=f"Rendering test frame") as t:
+    with tqdm(range(len(params['frames'])), unit="images", desc=f"Rendering test frame") as t:
         for i in t:
-            #resolution = testbed.nerf.training.dataset.metadata[i].resolution
-            resolution = [int(params['frames'][i]['w']), int(params['frames'][i]['h'])]
-            testbed.set_camera_to_training_view(i)
+            height, width = int(params['frames'][i]['h']), int(params['frames'][i]['w'])
+            testbed.nerf.training.set_camera_extrinsics(0, params['frames'][i]['transform_matrix'][:3], convert_to_ngp=True)
+            testbed.nerf.training.set_camera_intrinsics(
+                0,
+                fx=params['frames'][i]["fl_x"], fy=params['frames'][i]["fl_y"],
+                cx=params['frames'][i]["cx"], cy=params['frames'][i]["cy"],
+            )
+
+            #print(testbed.nerf.training.dataset.metadata[0].resolution)
+            #testbed.nerf.training.dataset.metadata[i].resolution = [height, width]
+
+            resolution = [1920, 1080]#[int(params['frames'][i]['w']), int(params['frames'][i]['h'])]
+            testbed.set_camera_to_training_view(0)
             testbed.render_ground_truth = False
             image = testbed.render(resolution[0], resolution[1], 1, True)
             save_root_path = args.dst
@@ -71,8 +69,44 @@ def ingp_render(args):
             save_path = os.path.join(save_root_path, f'{i:05d}.png')
             # write_image should only accept linear color as input
             #print(np.unique(image))
-            write_image(save_path, image)
- 
+            write_image(save_path, image)          
+
+    #testbed.nerf.training.optimize_extrinsics = True
+    #testbed.nerf.training.optimize_distortion = True
+    #testbed.nerf.training.optimize_extra_dims = True
+
+    #extra_dim = testbed.nerf.training.get_extra_dims(0)
+    #for i in range(len(params['frames'])):
+    #    height, width = int(params['frames'][i]['h']), int(params['frames'][i]['w'])
+    #    depth_img = np.zeros((height, width))
+    #    img = np.zeros((height, width, 4))
+    #    testbed.nerf.set_rendering_extra_dims(extra_dim)
+        #testbed.nerf.training.set_image(i, img, depth_img)
+    #    testbed.nerf.training.set_camera_extrinsics(i, params['frames'][i]['transform_matrix'][:3], convert_to_ngp=True)
+    #    testbed.nerf.training.set_camera_intrinsics(
+    #        i,
+    #        fx=params['frames'][i]["fl_x"], fy=params['frames'][i]["fl_y"],
+    #        cx=params['frames'][i]["cx"], cy=params['frames'][i]["cy"],
+    #    )
+
+    #for i in range(len(params['frames'])):
+    #with tqdm(range(testbed.nerf.training.dataset.n_images), unit="images", desc=f"Rendering test frame") as t:
+    #with tqdm(range(len(params['frames'])), unit="images", desc=f"Rendering test frame") as t:
+    #    for i in t:
+            #resolution = testbed.nerf.training.dataset.metadata[i].resolution
+    #        resolution = [int(params['frames'][i]['w']), int(params['frames'][i]['h'])]
+    #        testbed.set_camera_to_training_view(i)
+    #        testbed.render_ground_truth = False
+    #        image = testbed.render(resolution[0], resolution[1], 1, True)
+    #        save_root_path = args.dst
+    #        if not os.path.isdir(save_root_path):
+    #            os.makedirs(save_root_path)
+
+     #       save_path = os.path.join(save_root_path, f'{i:05d}.png')
+            # write_image should only accept linear color as input
+            #print(np.unique(image))
+     #       write_image(save_path, image)
+    
 
 def main():
     parser = argparse.ArgumentParser()
@@ -80,9 +114,18 @@ def main():
     parser.add_argument("--near_distance", default=0.2, type=float, help="Set the distance from the camera at which training rays start for nerf. <0 means use ngp default")
     parser.add_argument("--dst", required=True, help="Destination for output images")
     parser.add_argument("--network", type=str, default=os.path.join(".", "configs", "nerf", "base.json"))
-    parser.add_argument("--x_scale", nargs=2, default=[-0.179, 1.23], type=float)
-    parser.add_argument("--y_scale", nargs=2, default=[-0.154, 0.905], type=float)
-    parser.add_argument("--z_scale", nargs=2, default=[-0.204, 1.429], type=float)
+    # opera house
+    #parser.add_argument("--x_scale", nargs=2, default=[-0.179, 1.23], type=float)
+    #parser.add_argument("--y_scale", nargs=2, default=[-0.154, 0.905], type=float)
+    #parser.add_argument("--z_scale", nargs=2, default=[-0.204, 1.429], type=float)
+    # taipei
+    #parser.add_argument("--x_scale", nargs=2, default=[-0.179, 1.23], type=float)
+    #parser.add_argument("--y_scale", nargs=2, default=[-0.430, 1.456], type=float)
+    #parser.add_argument("--z_scale", nargs=2, default=[-0.204, 1.429], type=float)
+    # opera house outdoor
+    parser.add_argument("--x_scale", nargs=2, default=[-0.104, 1.474], type=float)
+    parser.add_argument("--y_scale", nargs=2, default=[-1.152, 0.867], type=float)
+    parser.add_argument("--z_scale", nargs=2, default=[-1.009, 1.468], type=float)
     #parser.add_argument("--x_scale", nargs=2, default=[-2.5, 2.5], type=float)
     #parser.add_argument("--y_scale", nargs=2, default=[-2.5, 2.5], type=float)
     #parser.add_argument("--z_scale", nargs=2, default=[-2.5, 2.5], type=float)

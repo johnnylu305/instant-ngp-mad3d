@@ -41,23 +41,33 @@ def ingp_render_online(args):
     # reload a snapshot
     snapshot_path = os.path.join(parent, 'train_models', 'offline.ingp')
     testbed.load_snapshot(snapshot_path)
+
     # initialize a dataset
-    testbed.create_empty_nerf_dataset(n_images=len(params['frames']), aabb_scale=args.aabb)
-    testbed.shall_train = False   
+    #testbed.create_empty_nerf_dataset(n_images=len(params['frames']), aabb_scale=args.aabb)
+    testbed.shall_train = False
+
     #testbed.load_training_data(args.pose)
     # near plane
     if args.near_distance>=0.0:
         testbed.nerf.training.near_distance = args.near_distance
-    testbed.render_aabb.min = np.array([-0.179, -0.154, -0.204])
-    testbed.render_aabb.max = np.array([1.230, 0.905, 1.429])
+    # opera house
+    #testbed.render_aabb.min = np.array([-0.179, -0.154, -0.204])
+    #testbed.render_aabb.max = np.array([1.230, 0.905, 1.429])
+    # taipei
+    testbed.render_aabb.min = np.array([-0.179, -0.430, -0.204])
+    testbed.render_aabb.max = np.array([1.230, 1.456, 1.429])
+    # outdoor opera house
+    testbed.render_aabb.min = np.array([-0.104, -1.152, -1.009])
+    testbed.render_aabb.max = np.array([1.474, 0.867, 1.468])
 
     sw = 1920 #width 
     sh = 1080 #height 
     testbed.init_window(sw, sh)
-    testbed.nerf.visualize_cameras = True
+    testbed.nerf.visualize_cameras = False
 
     while testbed.frame():
         pass
+    
 
 def main():
     args = parser.parse_args()

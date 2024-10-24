@@ -202,8 +202,12 @@ if __name__=="__main__":
         trajectory['frames'][-1]['transform_matrix'] = mat.tolist()
         trajectory['frames'][-1]['file_path'] = f'temp/temp.jpg' #f'cam{i:05d}'
         # high resolution
-        w = 1920 #3000 #4000
-        h = 1080 #1695 #2250
+        if 'fl_x' in params:
+            w = params['w'] #1920 #3000 #4000
+            h = params['h'] #1080 #1695 #2250
+        else:
+            w = params['frames'][0]['w'] #1920 #3000 #4000
+            h = params['frames'][0]['h'] #1080 #1695 #2250
         print(trajectory)
         if 'fl_x' in params:
             trajectory['fl_x'] = params['fl_x']*(w/params['w'])

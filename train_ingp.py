@@ -84,7 +84,7 @@ def run_ingp(args):
         print("--------------------------------------------")
         testbed.nerf.training.optimize_extrinsics = True
         testbed.nerf.training.optimize_distortion = True
-        #testbed.nerf.training.optimize_extra_dims = True
+        testbed.nerf.training.optimize_extra_dims = True
 
     # Training
     testbed.nerf.training.n_images_for_training = len(params['frames'])
